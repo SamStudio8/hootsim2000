@@ -7,14 +7,17 @@
 class Controller {
 public:
     Controller();
-    explicit Controller(class MessageQueue*);
+    Controller(class MessageQueue*);
     ~Controller();
     
     void add_requirement(std::string);
     std::set<std::string> get_requirements();
     bool meets_requirements(class Entity* e);
-private:
+    virtual void notify(std::string) = 0;
+    
+protected:
     class MessageQueue* mq;
+private:
     std::set<std::string> requirements;
 };
 

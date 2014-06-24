@@ -7,8 +7,10 @@
 class Simulator {
 public:
     Simulator();
+    Simulator(class MessageQueue*);
     ~Simulator();
 private:
+    class MessageQueue* mq;
     std::vector<class Entity*> registered_entities;
     std::vector<class Controller*> registered_controllers;
     std::map<class Entity*, class Controller*> controllers;

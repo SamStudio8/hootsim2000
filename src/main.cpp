@@ -5,13 +5,40 @@
 #include "MessageQueue.h"
 #include "Simulator.h"
 
+class SimController: public Controller {
+public:
+    SimController(MessageQueue* mq)
+    : Controller(mq)
+    {
+        this->mq->subscribe(std::string("add_property"), this);
+    }
+    
+    void notify(std::string message){
+        if (message.compare(std::string("add_property")) == 0){
+            std::cout << "Add Property Message Received";
+        }
+    }
+};
+
 class HootController: public Controller {
-    using Controller::Controller;
+public:
+    HootController(MessageQueue* mq)
+    : Controller(mq)
+    {
+        //this->mq->subscribe(std::string("hoot"), this);
+    }
+    
+    void notify(std::string message){
+        std::cout << message;
+    }
 };
 
 int main(){
-    Simulator s;
+
     MessageQueue mq;
+    Simulator s(&mq);
+    
+    SimController sc(&mq);
     
     HootController hc(&mq);
     hc.add_requirement("hooting");

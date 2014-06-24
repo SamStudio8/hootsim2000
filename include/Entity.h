@@ -7,12 +7,13 @@
 class Entity {
 public:
     Entity();
-    Entity(class MessageQueue*);
+    Entity(class MessageQueue* mq);
     ~Entity();
     
     std::map<std::string, float> get_properties();
     void add_property(std::string key, float value);
 private:
+    class MessageQueue* mq;
     std::map<std::string, float> properties;
 };
 

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <map>
 
 #include "Controller.h"
@@ -29,4 +30,6 @@ bool Controller::meets_requirements(Entity* e){
     }
     return false;
 }
+
+
 
