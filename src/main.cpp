@@ -7,17 +7,20 @@
 
 class SimController: public Controller {
 public:
-    SimController(MessageQueue* mq)
+    SimController(Simulator* sim, MessageQueue* mq)
     : Controller(mq)
     {
+        this->sim = sim;
+        this->mq->subscribe(std::string("auto_attach"), this);
         this->mq->subscribe(std::string("add_property"), this);
     }
     
     void notify(std::string message){
-        if (message.compare(std::string("add_property")) == 0){
-            std::cout << "Add Property Message Received";
-        }
+        // Forward all messages to the simulator directly.
+        this->sim->notify(message);
     }
+private:
+    Simulator* sim;
 };
 
 class HootController: public Controller {
@@ -36,29 +39,30 @@ public:
 int main(){
 
     MessageQueue mq;
-    Simulator s(&mq);
+    Simulator sim(&mq);
     
-    SimController sc(&mq);
+    SimController sc(&sim, &mq);
     
     HootController hc(&mq);
+    sim.register_controller(&hc);
     hc.add_requirement("hooting");
     hc.add_requirement("nocturnal");
     
-    std::cout << "HootController Requirements:\n";
+    
+    //std::cout << "HootController Requirements:\n";
     for (std::set<std::string>::iterator it=hc.get_requirements().begin(); it!=hc.get_requirements().end(); ++it){
-        std::cout << *it << '\n';
+        //std::cout << *it << '\n';
     }
-    std::cout << '\n';
     
     Entity hoot(&mq);
+    sim.register_entity(&hoot);
     hoot.add_property("nocturnal", 1);
-    hoot.add_property("hoot", 1);
+    hoot.add_property("hooting", 1);
     hoot.add_property("health", 100);
     
-    std::cout << "\nHoot Properties:\n";
+    //std::cout << "\nHoot Properties:\n";
     for (std::map<std::string, float>::iterator it=hoot.get_properties().begin(); it!=hoot.get_properties().end(); ++it){
-        std::cout << it->first << " => " << it->second << '\n';
+        //std::cout << it->first << " => " << it->second << '\n';
     }
-    std::cout << '\n';
     return 0;
 }

@@ -6,7 +6,7 @@ Entity::Entity(){
 }
 
 Entity::~Entity(){
-
+    //TODO(samstudio8)
 }
 
 Entity::Entity(MessageQueue* mq){

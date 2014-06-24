@@ -11,6 +11,7 @@ public:
     ~MessageQueue();
     
     void subscribe(std::string msg_type, class Controller* subscriber);
+    void broadcast(std::string);
     void broadcast(std::string, class Entity*);
     
 private:

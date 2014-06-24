@@ -1,19 +1,25 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include <vector>
 #include <map>
+#include <string>
+#include <vector>
 
 class Simulator {
 public:
     Simulator();
     Simulator(class MessageQueue*);
     ~Simulator();
+    
+    void notify(std::string);
+    void register_controller(class Controller*);
+    void register_entity(class Entity*);
 private:
     class MessageQueue* mq;
     std::vector<class Entity*> registered_entities;
     std::vector<class Controller*> registered_controllers;
     std::map<class Entity*, class Controller*> controllers;
+    void auto_attach_controllers();
 };
 
 #endif // SIMULATOR_H
