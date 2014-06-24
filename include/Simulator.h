@@ -14,6 +14,7 @@ public:
     void notify(std::string);
     void register_controller(class Controller*);
     void register_entity(class Entity*);
+    void tick();
 private:
     class MessageQueue* mq;
     std::vector<class Entity*> registered_entities;

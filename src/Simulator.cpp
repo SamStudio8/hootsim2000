@@ -30,15 +30,13 @@ void Simulator::register_entity(Entity* e){
 
 
 void Simulator::notify(std::string message){
-    if (message.compare(std::string("add_property")) == 0){
+    if (message.compare(std::string("add_prop")) == 0){
         // Currently nukes all controllers.
         // In future, messages will specify the originating entity.
-        this->mq->broadcast(std::string("sim_destroy_controllers"), -1, 0, std::string("Simulator received instruction to destroy all controllers after add_property"));
+        this->mq->broadcast(std::string("sim_dcon"), -1, 0, std::string("Simulator received instruction to destroy all controllers after add_property"));
         
         this->controllers.clear();
         this->auto_attach_controllers();
-    }
-    if (message.compare(std::string("auto_attach")) == 0){
     }
 }
 
@@ -46,12 +44,12 @@ void Simulator::auto_attach_controllers(){
     // Currently called for all entities and all controllers, which is most bad.
     for (size_t eIndex=0; eIndex < this->registered_entities.size(); eIndex++){
         for (size_t cIndex=0; cIndex < this->registered_controllers.size(); cIndex++){
-
             if( this->registered_controllers.at(cIndex)->meets_requirements(this->registered_entities.at(eIndex)) ){
                 this->controllers.insert(std::pair<Entity*, Controller*>(
                     this->registered_entities.at(eIndex),
                     this->registered_controllers.at(cIndex)
                 ));
+                this->registered_controllers.at(cIndex)->attach_entity(this->registered_entities.at(eIndex));
                 
                 std::ostringstream oss;
                 oss << "Simulator auto attached E" << this->registered_entities.at(eIndex)->get_id() << " to C" << this->registered_controllers.at(cIndex)->get_id() << " after meeting requirements";
@@ -61,5 +59,13 @@ void Simulator::auto_attach_controllers(){
         }        
     }
 }
+
+void Simulator::tick(){
+    this->mq->broadcast(std::string("sim_tick"), -1, 0, std::string("Simulation tick."));
+    for (std::map<Entity*, Controller*>::iterator it=this->controllers.begin(); it!=this->controllers.end(); ++it){
+        it->second->tick();
+    }
+}
+
 
 

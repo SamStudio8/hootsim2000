@@ -16,9 +16,13 @@ public:
     virtual void notify(std::string) = 0;
     void set_id(int);
     int get_id();
+    virtual void tick() = 0;
+    void attach_entity(class Entity*);
+    class Entity* get_entity();
     
 protected:
     class MessageQueue* mq;
+    class Entity* entity;
 private:
     int id;
     std::set<std::string> requirements;
