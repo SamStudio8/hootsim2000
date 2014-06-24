@@ -1,7 +1,10 @@
 #include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
 
 #include "Controller.h"
+#include "Entity.h"
 #include "MessageQueue.h"
 #include "Simulator.h"
 
@@ -30,12 +33,12 @@ void Simulator::notify(std::string message){
     if (message.compare(std::string("add_property")) == 0){
         // Currently nukes all controllers.
         // In future, messages will specify the originating entity.
-        std::cout << "[SIM_] Received instruction to destroy all controllers after add_property" << "\n"; 
+        this->mq->broadcast(std::string("sim_destroy_controllers"), -1, 0, std::string("Simulator received instruction to destroy all controllers after add_property"));
+        
         this->controllers.clear();
         this->auto_attach_controllers();
     }
     if (message.compare(std::string("auto_attach")) == 0){
-        std::cout << "[SIM_] Received confirmation of auto_attach" << "\n";         
     }
 }
 
@@ -49,7 +52,11 @@ void Simulator::auto_attach_controllers(){
                     this->registered_entities.at(eIndex),
                     this->registered_controllers.at(cIndex)
                 ));
-                this->mq->broadcast(std::string("auto_attach"));
+                
+                std::ostringstream oss;
+                oss << "Simulator auto attached E" << this->registered_entities.at(eIndex)->get_id() << " to C" << this->registered_controllers.at(cIndex)->get_id() << " after meeting requirements";
+                std::string msg = oss.str();
+                this->mq->broadcast(std::string("auto_attach"), -1, 0, msg);
             }
         }        
     }

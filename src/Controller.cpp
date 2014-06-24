@@ -1,5 +1,7 @@
 #include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
 
 #include "Controller.h"
 #include "Entity.h"
@@ -17,9 +19,22 @@ Controller::~Controller(){
     //TODO(samstudio8)
 }
 
+void Controller::set_id(int id){
+    this->id = id;
+}
+
+int Controller::get_id(){
+    return this->id;
+}
+
 void Controller::add_requirement(std::string requirement){
+    
     this->requirements.insert(requirement);
-    this->mq->broadcast(std::string("add_requirement"));
+    
+    std::ostringstream oss;
+    oss << "Controller C" << this->get_id() << " adds " << requirement << " as requirement";
+    std::string msg = oss.str();
+    this->mq->broadcast(std::string("add_requirement"), -1, this->get_id(), msg);
 }
 
 std::set< std::string > Controller::get_requirements(){

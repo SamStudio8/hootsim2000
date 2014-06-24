@@ -10,9 +10,13 @@ public:
     Entity(class MessageQueue* mq);
     ~Entity();
     
+    int get_id();
+    void set_id(int id);
+    
     std::map<std::string, float> get_properties();
     void add_property(std::string key, float value);
 private:
+    int id;
     class MessageQueue* mq;
     std::map<std::string, float> properties;
 };

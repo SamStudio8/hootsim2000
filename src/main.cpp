@@ -45,6 +45,7 @@ int main(){
     
     HootController hc(&mq);
     sim.register_controller(&hc);
+    hc.set_id(1);
     hc.add_requirement("hooting");
     hc.add_requirement("nocturnal");
     
@@ -56,6 +57,7 @@ int main(){
     
     Entity hoot(&mq);
     sim.register_entity(&hoot);
+    hoot.set_id(2);
     hoot.add_property("nocturnal", 1);
     hoot.add_property("hooting", 1);
     hoot.add_property("health", 100);
