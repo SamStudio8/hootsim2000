@@ -1,7 +1,8 @@
 hootsim2000
 ===========
 
-A sequel to the extensible agent event based simulator, Hootsim.
+A sequel to the extensible agent event based simulator, Hootsim.  
+Now with added flat-pack meddelandekö!
 
 ### Requirements
 
