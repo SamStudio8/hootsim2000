@@ -8,7 +8,8 @@ FILE(GLOB_RECURSE HOOTSIM_HEADERS "include/*.hpp")
 
 source_group("Header Files" FILES ${HOOTSIM_HEADERS})
 source_group("Source Files" FILES ${HOOTSIM_SOURCES})
-add_executable(hootsim2000 ${HOOTSIM_SOURCES} ${HOOTSIM_HEADERS})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+add_executable(hootsim2000 ${HOOTSIM_SOURCES} ${HOOTSIM_HEADERS})
+
 install(TARGETS hootsim2000 RUNTIME DESTINATION bin)
