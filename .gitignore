@@ -1,3 +1,11 @@
+build/
+*.swp
+
+# kdev
+hootsim2000.kdev4
+.kdev4/
+.kdev*
+
 # Compiled Object files
 *.slo
 *.lo
