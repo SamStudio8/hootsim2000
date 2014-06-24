@@ -35,7 +35,9 @@ public:
     HootController(MessageQueue* mq)
     : Controller(mq)
     {
+        this->set_id(1);
         this->mq->subscribe(std::string("health_pack"), this);
+        this->mq->subscribe(std::string("new_dawn"), this);
     }
     
     void notify(std::string message){
@@ -45,6 +47,14 @@ public:
             std::string msg = oss.str();
             this->mq->broadcast(std::string("health_okay"), -1, this->entity->get_id(), msg);
             this->entity->update_property("health", 100);
+        }
+        else if (message.compare(std::string("new_dawn")) == 0){
+            
+            std::ostringstream oss;
+            oss << "Entity E" << this->entity->get_id() << " hoots!";
+            std::string msg = oss.str();
+            
+            this->mq->broadcast(std::string("hoot_hoot"), -1, this->entity->get_id(), msg);
         }
     }
     
@@ -74,7 +84,9 @@ public:
     DocController(MessageQueue* mq)
     : Controller(mq)
     {
+        this->set_id(3);
         this->mq->subscribe(std::string("health_crit"), this);
+        this->mq->subscribe(std::string("time_noon"), this);
     }
     
     void notify(std::string message){
@@ -86,6 +98,57 @@ public:
             std::string msg = oss.str();
             
             this->mq->broadcast(std::string("health_pack"), 2, this->entity->get_id(), msg);
+        }
+        else if (message.compare(std::string("time_noon")) == 0){
+            
+            std::ostringstream oss;
+            oss << "Doctor E" << this->entity->get_id() << " eats lunch.";
+            std::string msg = oss.str();
+
+            this->mq->broadcast(std::string("doc_noon"), -1, this->entity->get_id(), msg);
+        }
+    }
+    
+    void tick(){}
+};
+
+class WorldController: public Controller {
+public:
+    WorldController(MessageQueue* mq)
+    : Controller(mq)
+    {
+        this->set_id(5);
+        this->mq->subscribe(std::string("sim_tick"), this);
+    }
+    
+    void notify(std::string message){
+        if (message.compare(std::string("sim_tick")) == 0){
+            
+            float hour = this->entity->get_property("time");
+            hour = hour + 1;
+            hour = float(int(hour) % 24);
+            this->entity->update_property("time", hour);
+            
+            std::ostringstream oss;
+            oss << "World Entity E" << this->entity->get_id() << " updates hour to " << hour;
+            std::string msg = oss.str();
+            this->mq->broadcast(std::string("new_hour"), -1, this->entity->get_id(), msg);
+            
+            if(hour == 6){
+                this->mq->broadcast(std::string("new_dawn"), -1, this->entity->get_id(),
+                                    std::string("A new day dawns...")
+                );
+            }
+            else if(hour == 12){
+                this->mq->broadcast(std::string("time_noon"), -1, this->entity->get_id(),
+                                    std::string("It's noon. Hope you're hungry.")
+                );
+            }
+            else if(hour == 18){
+                this->mq->broadcast(std::string("time_evening"), -1, this->entity->get_id(),
+                    std::string("Better get indoors. It's getting dark.")
+                );
+            }
         }
     }
     
@@ -103,14 +166,17 @@ int main(){
     
     HootController hc(&mq);
     sim.register_controller(&hc);
-    hc.set_id(1);
     hc.add_requirement("hooting");
     hc.add_requirement("nocturnal");
     
     DocController dc(&mq);
     sim.register_controller(&dc);
-    dc.set_id(3);
     dc.add_requirement("has_doctorate");
+    
+    WorldController wc(&mq);
+    sim.register_controller(&wc);
+    wc.add_requirement("is_world");
+    wc.add_requirement("time");
     
     
     //std::cout << "HootController Requirements:\n";
@@ -130,12 +196,13 @@ int main(){
     doctor.set_id(4);
     doctor.add_property("has_doctorate", 1);
     
-    //std::cout << "\nHoot Properties:\n";
-    for (std::map<std::string, float>::iterator it=hoot.get_properties().begin(); it!=hoot.get_properties().end(); ++it){
-        //std::cout << it->first << " => " << it->second << '\n';
-    }
+    Entity world(&mq);
+    sim.register_entity(&world);
+    world.set_id(6);
+    world.add_property("is_world", 1);
+    world.add_property("time", 0);
 
-    for(int i=0; i<24; i++){
+    for(int i=0; i<13; i++){
         sim.tick();
         usleep(2000000);
     }
