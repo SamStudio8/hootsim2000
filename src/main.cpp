@@ -19,7 +19,7 @@ public:
         this->mq->subscribe(std::string("add_prop"), this);
     }
 
-    void notify(std::string message){
+    void notify(const std::string& message){
         // Forward all messages to the simulator directly.
         this->sim->notify(message);
     }
@@ -40,7 +40,7 @@ public:
         this->mq->subscribe(std::string("new_dawn"), this);
     }
 
-    void notify(std::string message){
+    void notify(const std::string& message){
         if (message.compare(std::string("health_pack")) == 0){
             std::ostringstream oss;
             oss << "Entity E" << this->entity->get_id() << " health restored!";
@@ -89,7 +89,7 @@ public:
         this->mq->subscribe(std::string("time_noon"), this);
     }
 
-    void notify(std::string message){
+    void notify(const std::string& message){
         if (message.compare(std::string("health_crit")) == 0){
             //TODO(samstudio8) Cheated and hard coded the hoot ID...
 
@@ -121,7 +121,7 @@ public:
         this->mq->subscribe(std::string("sim_tick"), this);
     }
 
-    void notify(std::string message){
+    void notify(const std::string& message){
         if (message.compare(std::string("sim_tick")) == 0){
 
             float hour = this->entity->get_property("time");

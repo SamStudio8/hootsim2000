@@ -15,7 +15,7 @@ MessageQueue::~MessageQueue(){
     //TODO(samstudio8)
 }
 
-void MessageQueue::broadcast(std::string msg_type, int to, int from, const std::string& message){
+void MessageQueue::broadcast(const std::string& msg_type, int to, int from, const std::string& message){
     
     std::cout << to << "\t" << from << "\t" << msg_type << "\t" << message << "\n";
     // Notify Subscribers (if there are any)
@@ -35,7 +35,7 @@ void MessageQueue::broadcast(std::string msg_type, int to, int from, const std::
     }
 }
 
-void MessageQueue::subscribe(std::string msg_type, Controller* subscriber){
+void MessageQueue::subscribe(const std::string& msg_type, Controller* subscriber){
     //TODO(samstudio8) This just happens to work, look away now.
     std::vector<Controller*> subscribers;
     subscribers.push_back(subscriber);

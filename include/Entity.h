@@ -14,9 +14,9 @@ public:
     void set_id(int id);
     
     std::map<std::string, float> get_properties();
-    void add_property(std::string key, float value);
-    float get_property(std::string key);
-    void update_property(std::string key, float value);
+    void add_property(const std::string& key, float value);
+    float get_property(const std::string& key);
+    void update_property(const std::string& key, float value);
 private:
     int id;
     class MessageQueue* mq;

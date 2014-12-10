@@ -24,7 +24,7 @@ void Entity::set_id(int id){
     this->id = id;
 }
 
-float Entity::get_property(std::string key){
+float Entity::get_property(const std::string& key){
     if(this->properties.find(key) != this->properties.end()){
         return this->properties.at(key);
     }
@@ -34,7 +34,7 @@ float Entity::get_property(std::string key){
     }
 }
 
-void Entity::update_property(std::string key, float value){
+void Entity::update_property(const std::string& key, float value){
     if(this->properties.find(key) != this->properties.end()){
         this->properties.at(key) = value;
         
@@ -48,7 +48,7 @@ void Entity::update_property(std::string key, float value){
     }
 }
 
-void Entity::add_property(std::string key, float value){
+void Entity::add_property(const std::string& key, float value){
 
     this->properties.insert(std::pair<std::string, float>(key, value));
     

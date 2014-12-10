@@ -31,7 +31,7 @@ Entity* Controller::get_entity(){
     return this->entity;
 }
 
-void Controller::add_requirement(std::string requirement){
+void Controller::add_requirement(const std::string& requirement){
     
     this->requirements.insert(requirement);
     

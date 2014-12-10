@@ -10,10 +10,10 @@ public:
     Controller(class MessageQueue* mq);
     ~Controller();
     
-    void add_requirement(std::string);
+    void add_requirement(const std::string& requirement);
     std::set<std::string> get_requirements();
     bool meets_requirements(class Entity* e);
-    virtual void notify(std::string) = 0;
+    virtual void notify(const std::string& message) = 0;
     void set_id(int);
     int get_id();
     virtual void tick() = 0;
