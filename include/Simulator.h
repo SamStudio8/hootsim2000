@@ -11,7 +11,7 @@ public:
     Simulator(class MessageQueue*);
     ~Simulator();
     
-    void notify(std::string);
+    void notify(const std::string& message);
     void register_controller(class Controller*);
     void register_entity(class Entity*);
     void tick();

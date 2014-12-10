@@ -29,7 +29,7 @@ void Simulator::register_entity(Entity* e){
 }
 
 
-void Simulator::notify(std::string message){
+void Simulator::notify(const std::string& message){
     if (message.compare(std::string("add_prop")) == 0){
         // Currently nukes all controllers.
         // In future, messages will specify the originating entity.

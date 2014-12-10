@@ -12,7 +12,7 @@ public:
     
     void subscribe(std::string msg_type, class Controller* subscriber);
     void broadcast(std::string);
-    void broadcast(std::string msg_type, int to, int from, std::string message);
+    void broadcast(std::string msg_type, int to, int from, const std::string& message);
     
 private:
     std::map<std::string, std::vector<class Controller*>> subscribers;

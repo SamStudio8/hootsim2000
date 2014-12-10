@@ -15,7 +15,7 @@ MessageQueue::~MessageQueue(){
     //TODO(samstudio8)
 }
 
-void MessageQueue::broadcast(std::string msg_type, int to, int from, std::string message){
+void MessageQueue::broadcast(std::string msg_type, int to, int from, const std::string& message){
     
     std::cout << to << "\t" << from << "\t" << msg_type << "\t" << message << "\n";
     // Notify Subscribers (if there are any)
