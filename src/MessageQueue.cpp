@@ -42,6 +42,6 @@ void MessageQueue::subscribe(const std::string& msg_type, Controller* subscriber
     std::ostringstream oss;
     oss << "Controller C" << subscriber->get_id() << " listening for " << msg_type;
     std::string msg = oss.str();
-    this->broadcast(std::string("subscriber"), -1, -1, msg);
+    this->broadcast(std::string("subscription"), -1, -1, msg);
 }
 

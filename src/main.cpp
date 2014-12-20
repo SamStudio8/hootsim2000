@@ -50,26 +50,21 @@ public:
         if (msg_type.compare(std::string("sim_tick")) == 0){
             
             float ATTRITION_DAMAGE_PER_UNIT = 10;
-            
-            std::map<int, Entity*>::iterator iter;
-            for(iter = this->entities.begin(); iter != this->entities.end(); ++iter){
+                            
+            std::ostringstream oss;
+            oss << "Entity E" << this->get_entity(to)->get_id() << " suffers attrition!";
+            std::string msg = oss.str();
                 
-                std::ostringstream oss;
-                oss << "Entity E" << iter->first << " suffers attrition!";
-                std::string msg = oss.str();
+            this->mq->broadcast(std::string("health_loss"), -1, to, msg);
                 
-                this->mq->broadcast(std::string("health_loss"), -1, iter->first, msg);
+            float health = this->get_entity(to)->get_property("health");
+            health = health - ATTRITION_DAMAGE_PER_UNIT;        
+            this->get_entity(to)->update_property("health", health);
                 
-                float health = iter->second->get_property("health");
-                health = health - ATTRITION_DAMAGE_PER_UNIT;        
-                iter->second->update_property("health", health);
-                
-                if (health <= 10){
-                    this->mq->broadcast(std::string("health_crit"), -1, iter->first,
-                                        std::string("Entity health is critical! Call a doctor!"));
-                }
+            if (health <= 10){
+                this->mq->broadcast(std::string("health_crit"), -1, to,
+                                    std::string("Entity health is critical! Call a doctor!"));
             }
-            
         }
         else if (msg_type.compare(std::string("health_pack")) == 0){
             std::ostringstream oss;
