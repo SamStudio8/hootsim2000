@@ -27,8 +27,8 @@ int Controller::get_id(){
     return this->id;
 }
 
-Entity* Controller::get_entity(){
-    return this->entity;
+Entity* Controller::get_entity(int eid){
+    return this->entities.find(eid)->second;
 }
 
 void Controller::add_requirement(const std::string& requirement){
@@ -57,5 +57,18 @@ bool Controller::meets_requirements(Entity* e){
 }
 
 void Controller::attach_entity(Entity* e){
-    this->entity = e;
+    this->entities.insert(std::pair<int, Entity*>(e->get_id(), e));
+}
+
+void Controller::cnotify(const std::string& msg_type, int to, int from, const std::string& message){
+    //NOTE The SimController does not contain any entities (as its pointer to Simulator is not Entity)
+    //     this causes messages sent to -1 rather than 0 to not reach the required controller...
+    if (to >= 0){
+        this->notify(msg_type, to, from, message);
+    }
+    else{        
+        for(std::map<int, Entity*>::iterator it=this->entities.begin(); it!=this->entities.end(); ++it){            
+            this->notify(msg_type, it->first, from, message);
+        }
+    }
 }

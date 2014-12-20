@@ -19,9 +19,10 @@ public:
         this->mq->subscribe(std::string("add_prop"), this);
     }
 
-    void notify(const std::string& message){
+    void notify(const std::string& msg_type, int to, int from, const std::string& message){
+        
         // Forward all messages to the simulator directly.
-        this->sim->notify(message);
+        this->sim->notify(msg_type, to, from, message);
     }
 
     void tick(){}
@@ -38,47 +39,59 @@ public:
         this->set_id(1);
         this->mq->subscribe(std::string("health_pack"), this);
         this->mq->subscribe(std::string("new_dawn"), this);
+        this->mq->subscribe(std::string("sim_tick"), this);
     }
 
-    void notify(const std::string& message){
-        if (message.compare(std::string("health_pack")) == 0){
+    void notify(const std::string& msg_type, int to, int from, const std::string& message){
+        (void)message;
+        (void)from;
+        (void)to;
+        
+        if (msg_type.compare(std::string("sim_tick")) == 0){
+            
+            float ATTRITION_DAMAGE_PER_UNIT = 10;
+            
+            std::map<int, Entity*>::iterator iter;
+            for(iter = this->entities.begin(); iter != this->entities.end(); ++iter){
+                
+                std::ostringstream oss;
+                oss << "Entity E" << iter->first << " suffers attrition!";
+                std::string msg = oss.str();
+                
+                this->mq->broadcast(std::string("health_loss"), -1, iter->first, msg);
+                
+                float health = iter->second->get_property("health");
+                health = health - ATTRITION_DAMAGE_PER_UNIT;        
+                iter->second->update_property("health", health);
+                
+                if (health <= 10){
+                    this->mq->broadcast(std::string("health_crit"), -1, iter->first,
+                                        std::string("Entity health is critical! Call a doctor!"));
+                }
+            }
+            
+        }
+        else if (msg_type.compare(std::string("health_pack")) == 0){
             std::ostringstream oss;
-            oss << "Entity E" << this->entity->get_id() << " health restored!";
+            oss << "Entity E" << to << " health restored!";
             std::string msg = oss.str();
-            this->mq->broadcast(std::string("health_okay"), -1, this->entity->get_id(), msg);
-            this->entity->update_property("health", 100);
+            this->mq->broadcast(std::string("health_okay"), -1, to, msg);
+            this->get_entity(to)->update_property("health", 100);
         }
-        else if (message.compare(std::string("new_dawn")) == 0){
+        else if (msg_type.compare(std::string("new_dawn")) == 0){
 
             std::ostringstream oss;
-            oss << "Entity E" << this->entity->get_id() << " hoots!";
+            oss << "Entity E" << to << " hoots!";
             std::string msg = oss.str();
 
-            this->mq->broadcast(std::string("hoot_hoot"), -1, this->entity->get_id(), msg);
+            this->mq->broadcast(std::string("hoot_hoot"), -1, to, msg);
         }
     }
 
-    void tick(){
-
-        float ATTRITION_DAMAGE_PER_UNIT = 10;
-
-        std::ostringstream oss;
-        oss << "Entity E" << this->entity->get_id() << " suffers attrition!";
-        std::string msg = oss.str();
-        this->mq->broadcast(std::string("health_loss"), -1, this->entity->get_id(), msg);
-
-        float health = this->entity->get_property("health");
-        health = health - ATTRITION_DAMAGE_PER_UNIT;        
-        this->entity->update_property("health", health);
-
-        if (health <= 10){
-            this->mq->broadcast(std::string("health_crit"), -1, this->entity->get_id(),
-                                std::string("Entity health is critical! Call a doctor!"));
-        }
-
-    }
+    void tick(){}
 };
 
+    
 class DocController: public Controller {
 public:
     DocController(MessageQueue* mq)
@@ -89,23 +102,30 @@ public:
         this->mq->subscribe(std::string("time_noon"), this);
     }
 
-    void notify(const std::string& message){
-        if (message.compare(std::string("health_crit")) == 0){
+    
+    void notify(const std::string& msg_type, int to, int from, const std::string& message){
+        (void)message;
+        (void)from;
+        (void)to;
+        
+        //TODO Check 'to' is valid?
+        
+        if (msg_type.compare(std::string("health_crit")) == 0){
             //TODO(samstudio8) Cheated and hard coded the hoot ID...
 
             std::ostringstream oss;
-            oss << "Doctor E" << this->entity->get_id() << " sends medical aid to Entity E2";
+            oss << "Doctor E" << to << " sends medical aid to Entity E2";
             std::string msg = oss.str();
 
-            this->mq->broadcast(std::string("health_pack"), 2, this->entity->get_id(), msg);
+            this->mq->broadcast(std::string("health_pack"), 2, to, msg);
         }
-        else if (message.compare(std::string("time_noon")) == 0){
+        else if (msg_type.compare(std::string("time_noon")) == 0){
 
             std::ostringstream oss;
-            oss << "Doctor E" << this->entity->get_id() << " eats lunch.";
+            oss << "Doctor E" << this->get_entity(to)->get_id() << " eats lunch.";
             std::string msg = oss.str();
 
-            this->mq->broadcast(std::string("doc_noon"), -1, this->entity->get_id(), msg);
+            this->mq->broadcast(std::string("doc_noon"), -1, to, msg);
         }
     }
 
@@ -121,31 +141,34 @@ public:
         this->mq->subscribe(std::string("sim_tick"), this);
     }
 
-    void notify(const std::string& message){
-        if (message.compare(std::string("sim_tick")) == 0){
+    void notify(const std::string& msg_type, int to, int from, const std::string& message){
+        (void)message;
+        (void)from;
+        (void)to;
 
-            float hour = this->entity->get_property("time");
+        if (msg_type.compare(std::string("sim_tick")) == 0){
+
+            float hour = this->get_entity(to)->get_property("time");
             hour = hour + 1;
             hour = float(int(hour) % 24);
-            this->entity->update_property("time", hour);
+            this->get_entity(to)->update_property("time", hour);
 
             std::ostringstream oss;
-            oss << "World Entity E" << this->entity->get_id() << " updates hour to " << hour;
+            oss << "World Entity E" << to << " updates hour to " << hour;
             std::string msg = oss.str();
-            this->mq->broadcast(std::string("new_hour"), -1, this->entity->get_id(), msg);
+            this->mq->broadcast(std::string("new_hour"), -1, to, msg);
 
             if(hour == 6){
-                this->mq->broadcast(std::string("new_dawn"), -1, this->entity->get_id(),
-                                    std::string("A new day dawns...")
+                this->mq->broadcast(std::string("new_dawn"), -1, to, std::string("A new day dawns...")
                 );
             }
             else if(hour == 12){
-                this->mq->broadcast(std::string("time_noon"), -1, this->entity->get_id(),
+                this->mq->broadcast(std::string("time_noon"), -1, to,
                                     std::string("It's noon. Hope you're hungry.")
                 );
             }
             else if(hour == 18){
-                this->mq->broadcast(std::string("time_evening"), -1, this->entity->get_id(),
+                this->mq->broadcast(std::string("time_evening"), -1, to,
                     std::string("Better get indoors. It's getting dark.")
                 );
             }
@@ -201,7 +224,7 @@ int main(){
     world.set_id(6);
     world.add_property("is_world", 1);
     world.add_property("time", 0);
-
+    
     for(int i=0; i<13; i++){
         sim.tick();
         usleep(2000000);

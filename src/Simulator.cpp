@@ -29,13 +29,15 @@ void Simulator::register_entity(Entity* e){
 }
 
 
-void Simulator::notify(const std::string& message){
-    if (message.compare(std::string("add_prop")) == 0){
+void Simulator::notify(const std::string& msg_type, int to, int from, const std::string& message){
+    (void)message;
+    (void)from;
+    (void)to;
+        
+    if (msg_type.compare(std::string("add_prop")) == 0){
         // Currently nukes all controllers.
         // In future, messages will specify the originating entity.
         this->mq->broadcast(std::string("sim_dcon"), -1, 0, std::string("Simulator received instruction to destroy all controllers after add_property"));
-        
-        this->controllers.clear();
         this->auto_attach_controllers();
     }
 }
@@ -45,10 +47,6 @@ void Simulator::auto_attach_controllers(){
     for (size_t eIndex=0; eIndex < this->registered_entities.size(); eIndex++){
         for (size_t cIndex=0; cIndex < this->registered_controllers.size(); cIndex++){
             if( this->registered_controllers.at(cIndex)->meets_requirements(this->registered_entities.at(eIndex)) ){
-                this->controllers.insert(std::pair<Entity*, Controller*>(
-                    this->registered_entities.at(eIndex),
-                    this->registered_controllers.at(cIndex)
-                ));
                 this->registered_controllers.at(cIndex)->attach_entity(this->registered_entities.at(eIndex));
                 
                 std::ostringstream oss;
@@ -62,9 +60,6 @@ void Simulator::auto_attach_controllers(){
 
 void Simulator::tick(){
     this->mq->broadcast(std::string("sim_tick"), -1, 0, std::string("Simulation tick."));
-    for (std::map<Entity*, Controller*>::iterator it=this->controllers.begin(); it!=this->controllers.end(); ++it){
-        it->second->tick();
-    }
 }
 
 
