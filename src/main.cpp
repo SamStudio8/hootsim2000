@@ -25,8 +25,6 @@ public:
         this->sim->notify(msg_type, to, from, message);
     }
 
-    void tick(){}
-
 private:
     Simulator* sim;
 };
@@ -83,7 +81,6 @@ public:
         }
     }
 
-    void tick(){}
 };
 
     
@@ -106,25 +103,22 @@ public:
         //TODO Check 'to' is valid?
         
         if (msg_type.compare(std::string("health_crit")) == 0){
-            //TODO(samstudio8) Cheated and hard coded the hoot ID...
-
             std::ostringstream oss;
-            oss << "Doctor E" << to << " sends medical aid to Entity E2";
+            oss << "Doctor E" << to << " sends medical aid to Entity E" << from;
             std::string msg = oss.str();
 
-            this->mq->broadcast(std::string("health_pack"), 2, to, msg);
+            this->mq->broadcast(std::string("health_pack"), from, to, msg);
         }
         else if (msg_type.compare(std::string("time_noon")) == 0){
 
             std::ostringstream oss;
-            oss << "Doctor E" << this->get_entity(to)->get_id() << " eats lunch.";
+            oss << "Doctor E" << to << " eats lunch.";
             std::string msg = oss.str();
 
             this->mq->broadcast(std::string("doc_noon"), -1, to, msg);
         }
     }
 
-    void tick(){}
 };
 
 class WorldController: public Controller {
@@ -170,7 +164,6 @@ public:
         }
     }
 
-    void tick(){}
 };
 
 int main(){

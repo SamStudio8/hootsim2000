@@ -18,7 +18,6 @@ public:
     void cnotify(const std::string& msg_type, int to, int from, const std::string& message);
     void set_id(int);
     int get_id();
-    virtual void tick() = 0;
     void attach_entity(class Entity*);
     class Entity* get_entity(int eid);
     
