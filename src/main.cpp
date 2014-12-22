@@ -183,18 +183,15 @@ int main(){
     wc.add_requirement("time");
 
     
-    Entity hoot(&mq);
-    sim.register_entity(&hoot);
+    Entity hoot(&sim);
     hoot.add_property("nocturnal", 1);
     hoot.add_property("hooting", 1);
     hoot.add_property("health", 100);
 
-    Entity doctor(&mq);
-    sim.register_entity(&doctor);
+    Entity doctor(&sim);
     doctor.add_property("has_doctorate", 1);
 
-    Entity world(&mq);
-    sim.register_entity(&world);
+    Entity world(&sim);
     world.add_property("is_world", 1);
     world.add_property("time", 0);
     

@@ -4,6 +4,7 @@
 
 #include "Entity.h"
 #include "MessageQueue.h"
+#include "Simulator.h"
 
 Entity::Entity(){
 
@@ -13,8 +14,9 @@ Entity::~Entity(){
     //TODO(samstudio8)
 }
 
-Entity::Entity(MessageQueue* mq){
-    this->mq = mq;
+Entity::Entity(Simulator* sim){
+    this->set_messagequeue(sim->get_messagequeue());
+    sim->register_entity(this);
 }
 
 int Entity::get_id(){
@@ -63,3 +65,6 @@ std::map< std::string, float > Entity::get_properties()
     return this->properties;
 }
 
+void Entity::set_messagequeue(MessageQueue* mq){
+    this->mq = mq;
+}
