@@ -5,14 +5,16 @@
 
 #include "Controller.h"
 #include "Entity.h"
+#include "Simulator.h"
 #include "MessageQueue.h"
 
 Controller::Controller(){
 
 }
 
-Controller::Controller(MessageQueue* mq){
-    this->mq = mq;
+Controller::Controller(Simulator* sim){
+    this->set_messagequeue(sim->get_messagequeue());
+    sim->register_controller(this);
 }
 
 Controller::~Controller(){
@@ -73,3 +75,9 @@ void Controller::cnotify(const std::string& msg_type, int to, int from, const st
         }
     }
 }
+
+void Controller::set_messagequeue(MessageQueue* mq)
+{
+    this->mq = mq;
+}
+

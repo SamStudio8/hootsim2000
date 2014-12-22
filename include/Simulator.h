@@ -15,6 +15,8 @@ public:
     void register_controller(class Controller*);
     void register_entity(class Entity*);
     void tick();
+    
+    class MessageQueue* get_messagequeue();
 private:
     class MessageQueue* mq;
     void auto_attach_controllers(int eid);

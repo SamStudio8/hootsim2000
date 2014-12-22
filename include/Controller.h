@@ -8,7 +8,7 @@
 class Controller {
 public:
     Controller();
-    Controller(class MessageQueue* mq);
+    Controller(class Simulator* sim);
     ~Controller();
     
     void add_requirement(const std::string& requirement);
@@ -20,6 +20,7 @@ public:
     int get_id();
     void attach_entity(class Entity*);
     class Entity* get_entity(int eid);
+    void set_messagequeue(class MessageQueue* mq);
     
 protected:
     class MessageQueue* mq;

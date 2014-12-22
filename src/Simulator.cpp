@@ -63,5 +63,9 @@ void Simulator::tick(){
     this->mq->broadcast(std::string("sim_tick"), -1, 0, std::string("Simulation tick."));
 }
 
+MessageQueue* Simulator::get_messagequeue()
+{
+    return this->mq;
+}
 
 

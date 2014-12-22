@@ -11,8 +11,8 @@
 
 class SimController: public Controller {
 public:
-    SimController(Simulator* sim, MessageQueue* mq)
-    : Controller(mq)
+    SimController(Simulator* sim)
+    : Controller(sim)
     {
         this->sim = sim;
         this->set_id(0);
@@ -31,8 +31,8 @@ private:
 
 class HootController: public Controller {
 public:
-    HootController(MessageQueue* mq)
-    : Controller(mq)
+    HootController(Simulator* sim)
+    : Controller(sim)
     {
         this->mq->subscribe(std::string("health_pack"), this);
         this->mq->subscribe(std::string("new_dawn"), this);
@@ -85,8 +85,8 @@ public:
     
 class DocController: public Controller {
 public:
-    DocController(MessageQueue* mq)
-    : Controller(mq)
+    DocController(Simulator* sim)
+    : Controller(sim)
     {
         this->mq->subscribe(std::string("health_crit"), this);
         this->mq->subscribe(std::string("time_noon"), this);
@@ -121,8 +121,8 @@ public:
 
 class WorldController: public Controller {
 public:
-    WorldController(MessageQueue* mq)
-    : Controller(mq)
+    WorldController(Simulator* sim)
+    : Controller(sim)
     {
         this->mq->subscribe(std::string("sim_tick"), this);
     }
@@ -168,30 +168,21 @@ int main(){
     MessageQueue mq;
     Simulator sim(&mq);
 
-    SimController sc(&sim, &mq);
+    SimController sc(&sim);
     sc.add_requirement("is_simulator");
-    sim.register_controller(&sc);
 
-    HootController hc(&mq);
-    sim.register_controller(&hc);
+    HootController hc(&sim);
     hc.add_requirement("hooting");
     hc.add_requirement("nocturnal");
 
-    DocController dc(&mq);
-    sim.register_controller(&dc);
+    DocController dc(&sim);
     dc.add_requirement("has_doctorate");
 
-    WorldController wc(&mq);
-    sim.register_controller(&wc);
+    WorldController wc(&sim);
     wc.add_requirement("is_world");
     wc.add_requirement("time");
 
-
-    //std::cout << "HootController Requirements:\n";
-    for (std::set<std::string>::iterator it=hc.get_requirements().begin(); it!=hc.get_requirements().end(); ++it){
-        //std::cout << *it << '\n';
-    }
-
+    
     Entity hoot(&mq);
     sim.register_entity(&hoot);
     hoot.add_property("nocturnal", 1);
