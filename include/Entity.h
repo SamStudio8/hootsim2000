@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#include "Receiver.h"
+
 class Entity {
 public:
     Entity();

@@ -10,12 +10,11 @@ public:
     MessageQueue();
     ~MessageQueue();
     
-    void subscribe(const std::string& msg_type, class Controller* subscriber);
-    void broadcast(const std::string&);
+    void subscribe(const std::string& msg_type, class Receiver* subscriber);
     void broadcast(const std::string& msg_type, int to, int from, const std::string& message);
     
 private:
-    std::map<std::string, std::vector<class Controller*>> subscribers;
+    std::map<std::string, std::vector<class Receiver*>> subscribers;
 };
 
 #endif // MESSAGEQUEUE_H

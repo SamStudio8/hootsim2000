@@ -5,28 +5,28 @@
 #include <set>
 #include <string>
 
-class Controller {
+#include "Receiver.h"
+
+class Controller: public Receiver {
 public:
     Controller();
     Controller(class Simulator* sim);
-    ~Controller();
+    
+    virtual ~Controller() {}
     
     void add_requirement(const std::string& requirement);
     std::set<std::string> get_requirements();
     bool meets_requirements(class Entity* e);
-    virtual void notify(const std::string& msg_type, int to, int from, const std::string& message) = 0;
-    void cnotify(const std::string& msg_type, int to, int from, const std::string& message);
     void set_id(int);
-    int get_id();
     void attach_entity(class Entity*);
     class Entity* get_entity(int eid);
-    void set_messagequeue(class MessageQueue* mq);
+
+    void super_notify(const std::string& msg_type, int to, int from, const std::string& message);    
+    virtual void notify(const std::string& msg_type, int to, int from, const std::string& message) = 0;
     
 protected:
-    class MessageQueue* mq;
     std::map<int, class Entity*> entities;
 private:
-    int id;
     std::set<std::string> requirements;
 };
 

@@ -9,25 +9,6 @@
 #include "MessageQueue.h"
 #include "Simulator.h"
 
-class SimController: public Controller {
-public:
-    SimController(Simulator* sim)
-    : Controller(sim)
-    {
-        this->sim = sim;
-        this->set_id(0);
-        this->mq->subscribe(std::string("add_prop"), this);
-    }
-
-    void notify(const std::string& msg_type, int to, int from, const std::string& message){
-        
-        // Forward all messages to the simulator directly.
-        this->sim->notify(msg_type, to, from, message);
-    }
-
-private:
-    Simulator* sim;
-};
 
 class HootController: public Controller {
 public:
@@ -167,9 +148,6 @@ int main(){
 
     MessageQueue mq;
     Simulator sim(&mq);
-
-    SimController sc(&sim);
-    sc.add_requirement("is_simulator");
 
     HootController hc(&sim);
     hc.add_requirement("hooting");

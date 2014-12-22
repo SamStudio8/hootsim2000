@@ -14,6 +14,7 @@ Simulator::Simulator(){
 
 Simulator::Simulator(MessageQueue* mq){
     this->mq = mq;
+    this->mq->subscribe(std::string("add_prop"), this);
     this->id_autoincrement = 1;
 }
 
@@ -32,7 +33,7 @@ void Simulator::register_entity(Entity* e){
 }
 
 
-void Simulator::notify(const std::string& msg_type, int to, int from, const std::string& message){
+void Simulator::super_notify(const std::string& msg_type, int to, int from, const std::string& message){
     (void)message;
     (void)to;
         
