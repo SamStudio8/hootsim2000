@@ -9,11 +9,12 @@
 #include "Simulator.h"
 
 Simulator::Simulator(){
-
+    this->id_autoincrement = 1;
 }
 
 Simulator::Simulator(MessageQueue* mq){
     this->mq = mq;
+    this->id_autoincrement = 1;
 }
 
 Simulator::~Simulator(){
@@ -21,41 +22,41 @@ Simulator::~Simulator(){
 }
 
 void Simulator::register_controller(Controller* c){
-    this->registered_controllers.push_back(c);
+    c->set_id(this->id_autoincrement++);
+    this->registered_controllers.insert(std::pair<int, Controller*>(c->get_id(), c));
 }
 
 void Simulator::register_entity(Entity* e){
-    this->registered_entities.push_back(e);
+    e->set_id(this->id_autoincrement++);
+    this->registered_entities.insert(std::pair<int, Entity*>(e->get_id(), e));
 }
 
 
 void Simulator::notify(const std::string& msg_type, int to, int from, const std::string& message){
     (void)message;
-    (void)from;
     (void)to;
         
     if (msg_type.compare(std::string("add_prop")) == 0){
-        // Currently nukes all controllers.
-        // In future, messages will specify the originating entity.
-        this->mq->broadcast(std::string("sim_dcon"), -1, 0, std::string("Simulator received instruction to destroy all controllers after add_property"));
-        this->auto_attach_controllers();
+        this->auto_attach_controllers(from);
     }
 }
 
-void Simulator::auto_attach_controllers(){
-    // Currently called for all entities and all controllers, which is most bad.
-    for (size_t eIndex=0; eIndex < this->registered_entities.size(); eIndex++){
-        for (size_t cIndex=0; cIndex < this->registered_controllers.size(); cIndex++){
-            if( this->registered_controllers.at(cIndex)->meets_requirements(this->registered_entities.at(eIndex)) ){
-                this->registered_controllers.at(cIndex)->attach_entity(this->registered_entities.at(eIndex));
-                
-                std::ostringstream oss;
-                oss << "Simulator auto attached E" << this->registered_entities.at(eIndex)->get_id() << " to C" << this->registered_controllers.at(cIndex)->get_id() << " after meeting requirements";
-                std::string msg = oss.str();
-                this->mq->broadcast(std::string("auto_attach"), -1, 0, msg);
-            }
-        }        
-    }
+void Simulator::auto_attach_controllers(int eid){
+    //TODO Catch invalid entity
+    Entity* e = this->registered_entities.find(eid)->second;
+    
+    for(std::map<int, Controller*>::iterator it=this->registered_controllers.begin(); it!=this->registered_controllers.end(); ++it){
+        // If entity matches requirements for the current controller, attach it
+        if( it->second->meets_requirements(e) ){
+            it->second->attach_entity(e);
+            
+            std::ostringstream oss;
+            oss << "Simulator auto attached E" << e->get_id() << " to C" << it->second->get_id() << " after meeting requirements";
+            std::string msg = oss.str();
+            this->mq->broadcast(std::string("auto_attach"), -1, 0, msg);
+        }
+        
+    }    
 }
 
 void Simulator::tick(){

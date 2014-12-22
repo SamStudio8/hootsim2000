@@ -34,7 +34,6 @@ public:
     HootController(MessageQueue* mq)
     : Controller(mq)
     {
-        this->set_id(1);
         this->mq->subscribe(std::string("health_pack"), this);
         this->mq->subscribe(std::string("new_dawn"), this);
         this->mq->subscribe(std::string("sim_tick"), this);
@@ -89,7 +88,6 @@ public:
     DocController(MessageQueue* mq)
     : Controller(mq)
     {
-        this->set_id(3);
         this->mq->subscribe(std::string("health_crit"), this);
         this->mq->subscribe(std::string("time_noon"), this);
     }
@@ -126,7 +124,6 @@ public:
     WorldController(MessageQueue* mq)
     : Controller(mq)
     {
-        this->set_id(5);
         this->mq->subscribe(std::string("sim_tick"), this);
     }
 
@@ -197,19 +194,16 @@ int main(){
 
     Entity hoot(&mq);
     sim.register_entity(&hoot);
-    hoot.set_id(2);
     hoot.add_property("nocturnal", 1);
     hoot.add_property("hooting", 1);
     hoot.add_property("health", 100);
 
     Entity doctor(&mq);
     sim.register_entity(&doctor);
-    doctor.set_id(4);
     doctor.add_property("has_doctorate", 1);
 
     Entity world(&mq);
     sim.register_entity(&world);
-    world.set_id(6);
     world.add_property("is_world", 1);
     world.add_property("time", 0);
     

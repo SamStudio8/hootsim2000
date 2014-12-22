@@ -17,10 +17,13 @@ public:
     void tick();
 private:
     class MessageQueue* mq;
-    std::vector<class Entity*> registered_entities;
-    std::vector<class Controller*> registered_controllers;
-    std::map<class Entity*, class Controller*> controllers;
-    void auto_attach_controllers();
+    void auto_attach_controllers(int eid);
+    
+    int id_autoincrement;
+    
+    std::map<int, class Entity*> registered_entities;
+    std::map<int, class Controller*> registered_controllers;
+    
 };
 
 #endif // SIMULATOR_H

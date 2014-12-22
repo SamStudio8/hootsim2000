@@ -28,6 +28,7 @@ int Controller::get_id(){
 }
 
 Entity* Controller::get_entity(int eid){
+    //TODO Catch invalid entity
     return this->entities.find(eid)->second;
 }
 
