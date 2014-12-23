@@ -34,6 +34,9 @@ void Simulator::register_entity(Entity* e){
 
 
 void Simulator::super_notify(const std::string& msg_type, int to, int from, const std::string& message){
+    //NOTE Simulator doesn't read the 'to' field and assumes anything sent to it should be read.
+    //     Yes. Simulator opens your mail.
+    
     (void)message;
     (void)to;
         
