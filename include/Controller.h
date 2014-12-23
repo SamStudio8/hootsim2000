@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Receiver.h"
+#include "Registerable.h"
 
 class Controller: public Receiver {
 public:
@@ -17,7 +18,6 @@ public:
     void add_requirement(const std::string& requirement);
     std::set<std::string> get_requirements();
     bool meets_requirements(class Entity* e);
-    void set_id(int);
     void attach_entity(class Entity*);
     class Entity* get_entity(int eid);
 

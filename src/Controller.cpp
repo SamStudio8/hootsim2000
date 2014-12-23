@@ -13,10 +13,6 @@ Controller::Controller(Simulator* sim){
     sim->register_controller(this);
 }
 
-void Controller::set_id(int id){
-    this->id = id;
-}
-
 Entity* Controller::get_entity(int eid){
     //TODO Catch invalid entity
     return this->entities.find(eid)->second;

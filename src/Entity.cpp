@@ -19,13 +19,6 @@ Entity::Entity(Simulator* sim){
     sim->register_entity(this);
 }
 
-int Entity::get_id(){
-    return this->id;
-}
-void Entity::set_id(int id){
-    this->id = id;
-}
-
 float Entity::get_property(const std::string& key){
     if(this->properties.find(key) != this->properties.end()){
         return this->properties.at(key);
@@ -63,8 +56,4 @@ void Entity::add_property(const std::string& key, float value){
 std::map< std::string, float > Entity::get_properties()
 {
     return this->properties;
-}
-
-void Entity::set_messagequeue(MessageQueue* mq){
-    this->mq = mq;
 }
